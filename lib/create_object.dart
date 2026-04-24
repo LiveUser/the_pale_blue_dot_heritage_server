@@ -111,6 +111,11 @@ class CreateObject extends StatelessWidget {
                 onTap: ()async{
                   //On tap check if zenodo id already exists. if not, create object.
                   if(zenodoDigitalObjectIdentifier.text.isNotEmpty && filePath.isNotEmpty){
+                    CherryToast.info(
+                      title: Text(
+                        "Adding to database",
+                      ),
+                    ).show(context);
                     Entry entry = Entry(dbPath: databaseLocation);
                     late List<DbObject> objects;
                     try{
@@ -127,31 +132,32 @@ class CreateObject extends StatelessWidget {
                       //Inject object. No enties exists
                       entry.select().insert(
                         key: "objects", 
-                        value: {
-                          "zenodoDOI": zenodoDigitalObjectIdentifier.text,
-                          "description": "",
-                          "model": {
-                            "bytes": File(filePath).readAsBytesSync().toList(),
+                        value: [
+                          {
+                            "zenodoDOI": zenodoDigitalObjectIdentifier.text,
+                            "description": "",
+                            "model": {
+                              "bytes": File(filePath).readAsBytesSync().toList(),
+                            },
                           },
-                        },
+                        ],
                       );
                       CherryToast.success(
                         title: Text(
                           "Succesfully added",
                         ),
-                      );
+                      ).show(context);
                       //Delete file after adding it to database
                       File compressedFile = File(filePath);
                       await compressedFile.delete(); 
-                      if(Navigator.canPop(context)){
-                        Navigator.pop(context);
-                      }
+                      zenodoDigitalObjectIdentifier.clear();
+                      filePath = "";
                     }catch(err){
                       CherryToast.error(
                         title: Text(
                           err.toString(),
                         ),
-                      );
+                      ).show(context);
                     }
                   }
                 },
@@ -199,7 +205,7 @@ class _ModelPickerState extends State<ModelPicker> {
         );
         if(filePickerResult != null){
           Directory outputFile = Directory("${Directory.systemTemp.path}/${filePickerResult.xFiles.first.name}");
-          await Process.run("gltf-transform", ["optimize", filePath, outputFile.path, "--compress", "draco"], runInShell: true);
+          await Process.run("gltf-transform", ["optimize", filePickerResult.xFiles.first.path, outputFile.path, "--compress", "draco"], runInShell: true);
           filePath = outputFile.path;
           setState(() {
             
@@ -257,19 +263,6 @@ class _ModelPickerState extends State<ModelPicker> {
               ),
             ),
           )
-        ),
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(20),
-          color: Colors.orange,
-          child: Text(
-            "Save Entry",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 25,
-            ),
-            textAlign: TextAlign.center,
-          ),
         ),
       ],
     );

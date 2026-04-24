@@ -50,18 +50,12 @@ class HomePage extends StatelessWidget {
                     }else if(path.startsWith("/3d-model")){
                       String uuid = path.substring(path.lastIndexOf("/") + 1);
                       Entry entry = Entry(dbPath: databaseLocation);
-                      for(DbObject object in entry.select().selectMultiple(key: "objects")){
-                        if(object.uuid == uuid){
-                          String modelUUID = object.view()["model"];
-                          DbObject dbObject = DbObject(
-                            uuid: modelUUID, 
-                            dbPath: entry.dbPath, 
-                            cipherKeys: entry.cipherKeys,
-                          );
-                          return Uint8List.fromList(dbObject.view()["bytes"]);
-                        }
-                      }
-                      return Uint8List.fromList("Model not found".codeUnits);
+                      DbObject modelObject = DbObject(
+                        uuid: uuid, 
+                        dbPath: entry.dbPath, 
+                        cipherKeys: entry.cipherKeys,
+                      );
+                      return Uint8List.fromList(modelObject.view()["bytes"]);
                     }else{
                       return Uint8List.fromList("Invalid Request".codeUnits);
                     }
@@ -69,7 +63,13 @@ class HomePage extends StatelessWidget {
                 ),
                 query: GrapheneQuery(
                   resolver: {
-
+                    "get-object-list": (arguments)async{
+                      List<Map<String,dynamic>> objects = [];
+                      Entry entry = Entry(dbPath: databaseLocation);
+                      for(DbObject dbObject in entry.select().selectMultiple(key: "objects")){
+                        objects.add(dbObject.view());
+                      }
+                    },
                   },
                 ), 
                 mutations: GrapheneMutation(
