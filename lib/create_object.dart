@@ -36,22 +36,23 @@ class CreateObject extends StatelessWidget {
               try{
                 Entry entry = Entry(dbPath: databaseLocation);
                 for(DbObject dbObject in entry.select().selectMultiple(key: "objects")){
-                  Uri uri = Uri.parse(dbObject.view()["zenodoDOI"]);
+                  String doi = dbObject.view()["zenodoDOI"].substring(dbObject.view()["zenodoDOI"].lastIndexOf(".") + 1);
+                  Uri uri = Uri.parse('https://zenodo.org/api/records/$doi');
+                  //print(uri.toString());
                   Response response = await get(uri);
-                  if (response.statusCode == 200) {
-                    Map<String, dynamic> data = json.decode(response.body);
-                    Map<String,dynamic> metadata = data['metadata'];
-                    String title = metadata['title'] ?? 'Untitled';
-                    String description = metadata['description'] ?? 'No description available.';
-                    dbObject.insert(
-                      key: "title", 
-                      value: title,
-                    );
-                    dbObject.insert(
-                      key: "description", 
-                      value: description,
-                    );
-                  }
+                  Map<String, dynamic> data = json.decode(response.body);
+                  //print(data);
+                  Map<String,dynamic> metadata = data['metadata'];
+                  String title = metadata['title'] ?? 'Untitled';
+                  String description = metadata['description'] ?? 'No description available.';
+                  dbObject.insert(
+                    key: "title", 
+                    value: title,
+                  );
+                  dbObject.insert(
+                    key: "description", 
+                    value: description,
+                  );
                 }
               }catch(error){
                 //Do nothing

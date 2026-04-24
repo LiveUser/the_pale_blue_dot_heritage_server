@@ -47,13 +47,13 @@ class HomePage extends StatelessWidget {
                   "databaseLocation": databaseLocation,
                 },
                 getHandler: GetHandler(
-                  handler: (path)async{
-                    if(path == "/default-model"){
-                      return (await rootBundle.load("./models/mural_de_petroglifos_de_salto_arriba_low_poly_compressed.glb")).buffer.asUint8List();
-                    }else if(path.startsWith("/3d-model")){
-                      String uuid = path.substring(path.lastIndexOf("/") + 1);
-                      
-                      return await File("$databaseLocation/models/$uuid.glb").readAsBytes();
+                  handler: (arguments)async{
+                    if(arguments["path"] == "/3d-model/default-model"){
+                      return (await rootBundle.load("models/mural_de_petroglifos_de_salto_arriba_low_poly_compressed.glb")).buffer.asUint8List();
+                    }else if(arguments["path"].startsWith("/3d-model")){
+                      String uuid = arguments["path"].substring(arguments["path"].lastIndexOf("/") + 1);
+                      //Error is referencing a global variable from within an isolate
+                      return await File("${arguments["databaseLocation"]}/models/$uuid.glb").readAsBytes();
                     }else{
                       return Uint8List.fromList("Invalid Request".codeUnits);
                     }

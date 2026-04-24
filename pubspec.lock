@@ -220,10 +220,10 @@ packages:
     dependency: "direct main"
     description:
       name: graphene_server
-      sha256: b48d5896f82a0e45d71f68cd02c4e8fe77efdaf3c7f425c29114b63b96a59692
+      sha256: "6b74d0dd609718fc506095a3ceb14effab80142fa76193b279939c8df04a4fb2"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.7+18"
+    version: "0.1.9+20"
   http:
     dependency: "direct main"
     description:
