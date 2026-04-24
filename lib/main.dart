@@ -49,7 +49,7 @@ class HomePage extends StatelessWidget {
                 getHandler: GetHandler(
                   handler: (arguments)async{
                     if(arguments["path"] == "/3d-model/default-model"){
-                      return (await rootBundle.load("models/mural_de_petroglifos_de_salto_arriba_low_poly_compressed.glb")).buffer.asUint8List();
+                      return await File("${arguments["databaseLocation"]}/models/default.glb").readAsBytes();
                     }else if(arguments["path"].startsWith("/3d-model")){
                       String uuid = arguments["path"].substring(arguments["path"].lastIndexOf("/") + 1);
                       //Error is referencing a global variable from within an isolate
