@@ -43,19 +43,17 @@ class HomePage extends StatelessWidget {
               //Run server to handle API calls
               startServer(
                 server: await HttpServer.bind(InternetAddress.loopbackIPv4, 8080), 
+                isolateVariables: {
+                  "databaseLocation": databaseLocation,
+                },
                 getHandler: GetHandler(
                   handler: (path)async{
                     if(path == "/default-model"){
-                      return (await rootBundle.load("models/mural_de_petroglifos_de_salto_arriba_low_poly_compressed.glb")).buffer.asUint8List();
+                      return (await rootBundle.load("./models/mural_de_petroglifos_de_salto_arriba_low_poly_compressed.glb")).buffer.asUint8List();
                     }else if(path.startsWith("/3d-model")){
                       String uuid = path.substring(path.lastIndexOf("/") + 1);
-                      Entry entry = Entry(dbPath: databaseLocation);
-                      DbObject modelObject = DbObject(
-                        uuid: uuid, 
-                        dbPath: entry.dbPath, 
-                        cipherKeys: entry.cipherKeys,
-                      );
-                      return Uint8List.fromList(modelObject.view()["bytes"]);
+                      
+                      return await File("$databaseLocation/models/$uuid.glb").readAsBytes();
                     }else{
                       return Uint8List.fromList("Invalid Request".codeUnits);
                     }
@@ -65,13 +63,18 @@ class HomePage extends StatelessWidget {
                   resolver: {
                     "get-object-list": (arguments)async{
                       List<Map<String,dynamic>> objects = [];
-                      Entry entry = Entry(dbPath: databaseLocation);
-                      for(DbObject dbObject in entry.select().selectMultiple(key: "objects")){
-                        objects.add(dbObject.view());
+                      Entry entry = Entry(dbPath: arguments["databaseLocation"]);
+                      if(entry.select().view()["objects"] != null){
+                        for(DbObject dbObject in entry.select().selectMultiple(key: "objects")){
+                          objects.add(dbObject.view());
+                        }
+                        return objects;
+                      }else{
+                        return [];
                       }
                     },
                   },
-                ), 
+                ),
                 mutations: GrapheneMutation(
                   resolver: {
 

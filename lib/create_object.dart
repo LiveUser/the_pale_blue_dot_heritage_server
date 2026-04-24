@@ -130,18 +130,22 @@ class CreateObject extends StatelessWidget {
                         }
                       }
                       //Inject object. No enties exists
-                      entry.select().insert(
+                      List<String> uuid = entry.select().insert(
                         key: "objects", 
                         value: [
                           {
                             "zenodoDOI": zenodoDigitalObjectIdentifier.text,
                             "description": "",
                             "model": {
-                              "bytes": File(filePath).readAsBytesSync().toList(),
+                              "file-name": filePath.substring(filePath.lastIndexOf("/") + 1),
                             },
                           },
                         ],
                       );
+                      //Store glb
+                      File databaseFile = File("$databaseLocation/models/${uuid.first}.glb");
+                      await databaseFile.create(recursive: true);
+                      await databaseFile.writeAsBytes(await File(filePath).readAsBytes());
                       CherryToast.success(
                         title: Text(
                           "Succesfully added",
