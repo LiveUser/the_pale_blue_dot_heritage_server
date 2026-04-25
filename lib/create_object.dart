@@ -19,8 +19,7 @@ class CreateObject extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextEditingController zenodoDigitalObjectIdentifier = TextEditingController();
-    //3d model data
-    String filePath = "";
+    TextEditingController zenodoDownloadLink = TextEditingController();
 
     return Scaffold(
       appBar: appBar(
@@ -98,20 +97,29 @@ class CreateObject extends StatelessWidget {
                 cursorColor: Colors.white,
               ),
               Text(
-                "3d model",
+                "Zenodo model download URL",
                 style: TextStyle(
                   fontSize: 25,
                 ),
               ),
-              ModelPicker(
-                onUpdate: (newFilePath){
-                  filePath = newFilePath;
-                },
+              TextField(
+                controller: zenodoDownloadLink,
+                decoration: InputDecoration(
+                  fillColor: Colors.orange,
+                  isDense: true,
+                  filled: true,
+                  contentPadding: EdgeInsets.all(20),
+                  border: InputBorder.none,
+                ),
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+                cursorColor: Colors.white,
               ),
               GestureDetector(
                 onTap: ()async{
                   //On tap check if zenodo id already exists. if not, create object.
-                  if(zenodoDigitalObjectIdentifier.text.isNotEmpty && filePath.isNotEmpty){
+                  if(zenodoDigitalObjectIdentifier.text.isNotEmpty && zenodoDownloadLink.text.isNotEmpty){
                     CherryToast.info(
                       title: Text(
                         "Adding to database",
@@ -131,32 +139,21 @@ class CreateObject extends StatelessWidget {
                         }
                       }
                       //Inject object. No enties exists
-                      List<String> uuid = entry.select().insert(
+                      entry.select().insert(
                         key: "objects", 
                         value: [
                           {
                             "zenodoDOI": zenodoDigitalObjectIdentifier.text,
                             "description": "",
-                            "model": {
-                              "file-name": filePath.substring(filePath.lastIndexOf("/") + 1),
-                            },
+                            "zenodoDownloadLink": zenodoDownloadLink.text,
                           },
                         ],
                       );
-                      //Store glb
-                      File databaseFile = File("$databaseLocation/models/${uuid.first}.glb");
-                      await databaseFile.create(recursive: true);
-                      await databaseFile.writeAsBytes(await File(filePath).readAsBytes());
                       CherryToast.success(
                         title: Text(
                           "Succesfully added",
                         ),
                       ).show(context);
-                      //Delete file after adding it to database
-                      File compressedFile = File(filePath);
-                      await compressedFile.delete(); 
-                      zenodoDigitalObjectIdentifier.clear();
-                      filePath = "";
                     }catch(err){
                       CherryToast.error(
                         title: Text(
