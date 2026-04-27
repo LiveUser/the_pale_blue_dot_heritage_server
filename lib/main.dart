@@ -47,7 +47,10 @@ class HomePage extends StatelessWidget {
                   "databaseLocation": databaseLocation,
                 },
                 redirectHandler: (queryParameters){
-                  return queryParameters["url"];
+                  return Redirect(
+                    mimeType: "model/gltf-binary", 
+                    url: queryParameters["url"],
+                  );
                 },
                 getHandler: GetHandler(
                   handler: (arguments)async{
