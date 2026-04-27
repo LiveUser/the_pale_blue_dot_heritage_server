@@ -46,6 +46,9 @@ class HomePage extends StatelessWidget {
                 isolateVariables: {
                   "databaseLocation": databaseLocation,
                 },
+                redirectHandler: (queryParameters){
+                  return queryParameters["url"];
+                },
                 getHandler: GetHandler(
                   handler: (arguments)async{
                     if(arguments["path"] == "/3d-model/default-model"){
