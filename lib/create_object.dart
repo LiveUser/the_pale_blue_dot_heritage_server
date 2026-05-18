@@ -1,13 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:objective_db/objective_db.dart';
 import 'package:the_pale_blue_dot_heritage_server/widgets.dart';
-import 'dart:io';
 import 'package:cherry_toast/cherry_toast.dart';
-import 'dart:convert';
 
 //Creates and modifies entries
 class CreateObject extends StatelessWidget {
@@ -22,53 +18,7 @@ class CreateObject extends StatelessWidget {
     TextEditingController zenodoDownloadLink = TextEditingController();
 
     return Scaffold(
-      appBar: appBar(
-        actions: [
-          //TODO: Sync button to cache data from zenodo API using the zenodo digital object identifier
-          GestureDetector(
-            onTap: ()async{
-              CherryToast.info(
-                title: Text(
-                  "Sync in progress",
-                ),
-              ).show(context);
-              try{
-                Entry entry = Entry(dbPath: databaseLocation);
-                for(DbObject dbObject in entry.select().selectMultiple(key: "objects")){
-                  String doi = dbObject.view()["zenodoDOI"].substring(dbObject.view()["zenodoDOI"].lastIndexOf(".") + 1);
-                  Uri uri = Uri.parse('https://zenodo.org/api/records/$doi');
-                  //print(uri.toString());
-                  Response response = await get(uri);
-                  Map<String, dynamic> data = json.decode(response.body);
-                  //print(data);
-                  Map<String,dynamic> metadata = data['metadata'];
-                  String title = metadata['title'] ?? 'Untitled';
-                  String description = metadata['description'] ?? 'No description available.';
-                  dbObject.insert(
-                    key: "title", 
-                    value: title,
-                  );
-                  dbObject.insert(
-                    key: "description", 
-                    value: description,
-                  );
-                }
-              }catch(error){
-                //Do nothing
-              }
-              CherryToast.success(
-                title: Text(
-                  "Sync complete",
-                ),
-              ).show(context);
-            },
-            child: Icon(
-              Icons.sync,
-              color: Colors.white,
-            ),
-          ),
-        ],
-      ),
+      appBar: appBar(),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(20),
@@ -180,93 +130,6 @@ class CreateObject extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-class ModelPicker extends StatefulWidget {
-  const ModelPicker({
-    super.key,
-    required this.onUpdate,
-  });
-  final Function(String pickedObject) onUpdate;
-  @override
-  State<ModelPicker> createState() => _ModelPickerState();
-}
-
-class _ModelPickerState extends State<ModelPicker> {
-  String filePath = "";
-
-  @override
-  Widget build(BuildContext context) {
-    return filePath.isEmpty ? GestureDetector(
-      onTap: ()async{
-        FilePickerResult? filePickerResult = await FilePicker.pickFiles(
-          allowMultiple: false,
-          type: FileType.custom,
-          allowedExtensions: ["glb"],
-        );
-        if(filePickerResult != null){
-          Directory outputFile = Directory("${Directory.systemTemp.path}/${filePickerResult.xFiles.first.name}");
-          await Process.run("gltf-transform", ["optimize", filePickerResult.xFiles.first.path, outputFile.path, "--compress", "draco"], runInShell: true);
-          filePath = outputFile.path;
-          setState(() {
-            
-          });
-        }else{
-          filePath = "";
-        }
-        widget.onUpdate(filePath);
-      },
-      child: Container(
-        width: double.infinity,
-        height: 100,
-        decoration: BoxDecoration(
-          border: Border.all(
-            width: 3,
-            color: Colors.orange,
-          ),
-        ),
-        child: Center(
-          child: Text(
-            "Tap to pick .glb file",
-          ),
-        ),
-      ),
-    ) : Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      spacing: 20,
-      children: [
-        GestureDetector(
-          onTap: ()async{
-            setState(() {
-              filePath = "";
-            });
-          },
-          child: Icon(
-            Icons.cancel,
-            color: Colors.red,
-          ),
-        ),
-        SizedBox(
-          width: double.infinity,
-          height: 200,
-          child: Container(
-            width: double.infinity,
-            height: 100,
-            decoration: BoxDecoration(
-              border: Border.all(
-                width: 3,
-                color: Colors.orange,
-              ),
-            ),
-            child: Center(
-              child: Text(
-                filePath.substring(filePath.lastIndexOf("/") + 1),
-              ),
-            ),
-          )
-        ),
-      ],
     );
   }
 }

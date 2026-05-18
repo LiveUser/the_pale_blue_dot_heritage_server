@@ -113,6 +113,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.7"
+  cupertino_icons:
+    dependency: transitive
+    description:
+      name: cupertino_icons
+      sha256: "41e005c33bd814be4d3096aff55b1908d419fde52ca656c8c47719ec745873cd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.9"
   dbus:
     dependency: transitive
     description:
@@ -280,6 +288,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.0"
+  lost:
+    dependency: "direct main"
+    description:
+      name: lost
+      sha256: b7748faf3eff362464499f4c06771a59feeaafd3040223d310a152094117135c
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2+4"
   markdown:
     dependency: transitive
     description:
@@ -392,6 +408,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.2+3"
+  quickie:
+    dependency: "direct main"
+    description:
+      name: quickie
+      sha256: "0bb4e1221b1c8fd755b625450e1f4b53f5589289b531b2122fc8dcbf8ae8aa2c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.6+7"
   rational:
     dependency: transitive
     description:
@@ -405,6 +429,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  sortero:
+    dependency: "direct main"
+    description:
+      name: sortero
+      sha256: "4d736c6b1ef9283e54bddb480c4470807d72b4202376ca78f7bc5bda394eaab1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.4+4"
   source_span:
     dependency: transitive
     description:

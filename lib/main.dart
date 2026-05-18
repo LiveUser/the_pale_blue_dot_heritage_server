@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:graphene_server/graphene_server.dart';
 import 'package:objective_db/objective_db.dart';
-import 'package:the_pale_blue_dot_heritage_server/database_manager.dart';
+import 'package:the_pale_blue_dot_heritage_server/main_menu.dart';
 import 'package:the_pale_blue_dot_heritage_server/widgets.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -89,7 +89,7 @@ class HomePage extends StatelessWidget {
               );
               //Navigate to next screen
               Navigator.push(context, MaterialPageRoute(
-                builder: (context) => DatabaseManager(
+                builder: (context) => MainMenu(
                   databaseLocation: databaseLocation,
                 ),
               ));

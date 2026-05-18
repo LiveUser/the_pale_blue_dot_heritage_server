@@ -36,6 +36,9 @@ dependencies:
   cherry_toast: ^1.13.0
   http: ^1.6.0
   graphene_server: ^0.2.0+21
+  lost: ^0.0.2+4
+  sortero: ^0.0.4+4
+  quickie: ^1.0.6+7
 
 dev_dependencies:
   flutter_test:
