@@ -209,7 +209,7 @@ class ObjectDisplayingWidget extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: ()async{
-                  //TODO: Change zenodo DOI
+                  //Change zenodo DOI
                   String? newDOI = await quickString(
                     context: context,
                     title: Text(
@@ -250,7 +250,7 @@ class ObjectDisplayingWidget extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: ()async{
-                  //TODO: Change zenodo Download Link
+                  //Change zenodo Download Link
                   String? newDownloadLink = await quickString(
                     context: context,
                     title: Text(
@@ -280,7 +280,7 @@ class ObjectDisplayingWidget extends StatelessWidget {
           ),
           GestureDetector(
             onTap: ()async{
-              //TODO: Delete button
+              //Delete button
               bool? shouldDelete = await quickConfirm(
                 context: context,
                 title: Text(
@@ -385,7 +385,7 @@ class _ObjectsDispayingWidgetState extends State<ObjectsDispayingWidget> {
       }
     }catch(error){
       //Do nothing
-      print(error.toString());
+      //print(error.toString());
     }
     //Sort
     if(widget.searchQuery.text.isNotEmpty){

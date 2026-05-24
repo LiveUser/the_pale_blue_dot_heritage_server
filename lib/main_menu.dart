@@ -6,14 +6,18 @@ class MainMenu extends StatelessWidget {
   const MainMenu({
     super.key,
     required this.databaseLocation,
+    required this.authDatabaseLocation,
   });
   final String databaseLocation;
+  final String authDatabaseLocation;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
+          spacing: 10,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             //Keep alive warning
@@ -44,7 +48,7 @@ class MainMenu extends StatelessWidget {
               onTap: (){
                 Navigator.push(context, MaterialPageRoute(
                   builder: (context) => AccessControlPanel(
-                    databaseLocation: databaseLocation,
+                    authDatabaseLocation: authDatabaseLocation,
                   ),
                 ));
               },
