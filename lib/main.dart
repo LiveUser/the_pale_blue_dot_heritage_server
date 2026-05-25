@@ -295,6 +295,7 @@ class _HomePageState extends State<HomePage> {
                               value: description,
                             );
                           }
+                          return "Database Fully Synced with Zenodo";
                         }else{
                           throw "You do not have access";
                         }
