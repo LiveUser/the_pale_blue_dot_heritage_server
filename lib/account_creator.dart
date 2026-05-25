@@ -71,7 +71,7 @@ class _AccountCreatorState extends State<AccountCreator> {
             ),
             GestureDetector(
               onTap: (){
-                //TODO: Create account
+                //Create account
                 if(username.text.isNotEmpty && password.text.isNotEmpty){
                   try{
                     Entry entry = Entry(

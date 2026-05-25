@@ -2,11 +2,14 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:graphene_server/auth.dart';
 import 'package:graphene_server/graphene_server.dart';
 import 'package:objective_db/objective_db.dart';
 import 'package:the_pale_blue_dot_heritage_server/main_menu.dart';
 import 'package:the_pale_blue_dot_heritage_server/widgets.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:http/http.dart';
+import 'dart:convert';
 
 void main() {
   runApp(const MyApp());
@@ -47,7 +50,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           GestureDetector(
             onTap: ()async{
-              //TODO: Enter auth database password and generate image
+              //Enter auth database password
               String? folderLocation = await FilePicker.getDirectoryPath();
               if(folderLocation != null && folderLocation.isNotEmpty){
                 setState(() {
@@ -81,6 +84,7 @@ class _HomePageState extends State<HomePage> {
                   server: await HttpServer.bind(InternetAddress.loopbackIPv4, 8080), 
                   isolateVariables: {
                     "databaseLocation": databaseLocation,
+                    "authDatabaseLocation": authDatabaseLocation,
                   },
                   redirectHandler: (queryParameters){
                     return Redirect(
@@ -103,6 +107,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   query: GrapheneQuery(
                     resolver: {
+                      //Server functionality--------------------------------------------------------
                       "get-object-list": (arguments)async{
                         List<Map<String,dynamic>> objects = [];
                         Entry entry = Entry(dbPath: arguments["databaseLocation"]);
@@ -115,11 +120,135 @@ class _HomePageState extends State<HomePage> {
                           return [];
                         }
                       },
+                      //User functionality-----------------------------------------------------------
+                      "login": (arguments)async{
+                        //Login and return token
+                        Entry authDatabase = Entry(dbPath: arguments["authDatabaseLocation"]);
+                        return login(
+                          authDatabase: authDatabase, 
+                          username: arguments["username"], 
+                          password: arguments["password"],
+                        );
+                      },
+                      
                     },
                   ),
                   mutations: GrapheneMutation(
                     resolver: {
-          
+                      //User functionality-----------------------------------------------------------
+                      "logout": (arguments)async{
+                        Entry authDatabase = Entry(dbPath: arguments["authDatabaseLocation"]);
+                        return logOutFromEverywhere(
+                          authDatabase: authDatabase, 
+                          username: arguments["username"], 
+                          password: arguments["password"],
+                        );
+                      },
+                      "createObject": (arguments)async{
+                        Entry authDatabase = Entry(dbPath: arguments["authDatabaseLocation"]);
+                        Entry objectsDatabase = Entry(dbPath: arguments["databaseLocation"]);
+                        bool userHasAccess = tokenIsValid(
+                          authDatabase: authDatabase, 
+                          accessToken: arguments["accessToken"],
+                        );
+                        if(userHasAccess){
+                          String zenodoDOI = arguments["zenodoDOI"];
+                          String zenodoDownloadLink = arguments["zenodoDownloadLink"];
+                          if(zenodoDOI.isNotEmpty && zenodoDownloadLink.isNotEmpty){
+                            objectsDatabase.select().insert(
+                              key: "objects",
+                              value: [
+                                {
+                                  "zenodoDOI": zenodoDOI,
+                                  "description": "",
+                                  "zenodoDownloadLink": zenodoDownloadLink,
+                                },
+                              ],
+                            );
+                            return "Object added succesfully to database";
+                          }else{
+                            throw "Zenodo DOI and Download Link cannot be empty";
+                          }
+                        }else{
+                          throw "You do not have access";
+                        }
+                      },
+                      //Modify 
+                      "modifyObject": (arguments)async{
+                        Entry authDatabase = Entry(dbPath: arguments["authDatabaseLocation"]);
+                        Entry objectsDatabase = Entry(dbPath: arguments["databaseLocation"]);
+                        bool userHasAccess = tokenIsValid(
+                          authDatabase: authDatabase, 
+                          accessToken: arguments["accessToken"],
+                        );
+                        if(userHasAccess){
+                          String zenodoDOI = arguments["zenodoDOI"];
+                          String zenodoDownloadLink = arguments["zenodoDownloadLink"];
+                          String uuid = arguments["uuid"];
+                          if(zenodoDOI.isNotEmpty && zenodoDownloadLink.isNotEmpty){
+                            DbObject objectToModify = DbObject(
+                              uuid: uuid, 
+                              dbPath: objectsDatabase.dbPath, 
+                              cipherKeys: null,
+                            );
+                            objectToModify.insert(
+                              key: "zenodoDOI", 
+                              value: zenodoDOI,
+                            );
+                            objectToModify.insert(
+                              key: "zenodoDownloadLink", 
+                              value: zenodoDownloadLink,
+                            );
+                            return "Object modified succesfully";
+                          }else{
+                            throw "Zenodo DOI and Download Link cannot be empty";
+                          }
+                        }else{
+                          throw "You do not have access";
+                        }
+                      },
+                      //Sync changes
+                      "sync": (arguments)async{
+                        Entry authDatabase = Entry(dbPath: arguments["authDatabaseLocation"]);
+                        Entry objectsDatabase = Entry(dbPath: arguments["databaseLocation"]);
+                        bool userHasAccess = tokenIsValid(
+                          authDatabase: authDatabase, 
+                          accessToken: arguments["accessToken"],
+                        );
+                        if(userHasAccess){
+                          String uuid = arguments["uuid"];
+                          if(uuid.isNotEmpty){
+                            DbObject objectToModify = DbObject(
+                              uuid: uuid, 
+                              dbPath: objectsDatabase.dbPath, 
+                              cipherKeys: null,
+                            );
+                            //Fetch data
+                            String doi = objectToModify.view()["zenodoDOI"].substring(objectToModify.view()["zenodoDOI"].lastIndexOf(".") + 1);
+                            Uri uri = Uri.parse('https://zenodo.org/api/records/$doi');
+                            //print(uri.toString());
+                            Response response = await get(uri);
+                            Map<String, dynamic> data = json.decode(response.body);
+                            //print(data);
+                            Map<String,dynamic> metadata = data['metadata'];
+                            String title = metadata['title'] ?? 'Untitled';
+                            String description = metadata['description'] ?? 'No description available.';
+                            objectToModify.insert(
+                              key: "title", 
+                              value: title,
+                            );
+                            objectToModify.insert(
+                              key: "description", 
+                              value: description,
+                            );
+                            return "Object synced succesfully";
+                          }else{
+                            throw "Zenodo DOI and Download Link cannot be empty";
+                          }
+                        }else{
+                          throw "You do not have access";
+                        }
+                      },
                     },
                   ),
                 );

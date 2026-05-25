@@ -43,7 +43,7 @@ class MainMenu extends StatelessWidget {
                 ],
               ),
             ),
-            //TODO: Access Control Panel
+            //Access Control Panel
             GestureDetector(
               onTap: (){
                 Navigator.push(context, MaterialPageRoute(

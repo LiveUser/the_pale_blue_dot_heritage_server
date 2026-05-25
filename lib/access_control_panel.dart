@@ -4,7 +4,6 @@ import 'package:raw_context/raw_context.dart';
 import 'package:the_pale_blue_dot_heritage_server/account_creator.dart';
 import 'package:the_pale_blue_dot_heritage_server/widgets.dart';
 import 'package:objective_db/objective_db.dart';
-import 'package:graphene_server/auth.dart';
 import 'package:quickie/quickie.dart';
 
 class AccessControlPanel extends StatefulWidget {
@@ -48,6 +47,7 @@ class _AccessControlPanelState extends State<AccessControlPanel> {
           padding: EdgeInsetsGeometry.all(20),
           child: Column(
             children: [
+              //TODO: Make the search functions work
               Row(
                 children: [
                   Expanded(
@@ -77,7 +77,7 @@ class _AccessControlPanelState extends State<AccessControlPanel> {
                   ),
                 ],
               ),
-              //TODO: Display Accounts
+              //Display Accounts
               AccountsDisplayer(
                 authDatabaseLocation: widget.authDatabaseLocation,
                 reload: (){
@@ -169,7 +169,7 @@ class StoredAccount extends StatelessWidget {
               ),
               RawContextItem(
                 onPressed: ()async{
-                  //TODO: Delete account
+                  //Delete account
                   bool shouldDelete = await quickConfirm(
                     context: context,
                     title: Text(

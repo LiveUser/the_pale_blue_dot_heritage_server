@@ -1,17 +1,41 @@
 # the_pale_blue_dot_heritage_server
 
-A new Flutter project.
+Free Open Source, Open Access, Archaeology Platform. Hecho con orgullo en Puerto Rico por Radamés Jomuel Valentín Reyes.
 
-## Getting Started
+## Official Instance
+The official/original instance of this app can be accessed by visiting [https://the-pale-blue-dot-heritage-project.pages.dev/](https://the-pale-blue-dot-heritage-project.pages.dev/) or by downloading the official android app at [The Google Play Store](https://play.google.com/store/apps/details?id=com.rawware.the_pale_blue_dot_heritage_project&hl=en)
 
-This project is a starting point for a Flutter application.
+## API
+A server created using Google Flutter along with my library [graphene_server](https://pub.dev/packages/graphene_server) and my custom database [objective_db](https://pub.dev/packages/objective_db).
 
-A few resources to get you started if this is your first Flutter project:
+### API Endpoint
+Requests should always be of type POST and format the body in BSON format.
+~~~
+http://localhost:port/graphene
+~~~
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+-------------------Documentation is under development----------------------
+### Get Objects List
+~~~dart
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+~~~
+### Login
+~~~dart
+
+~~~
+### Logout
+~~~dart
+
+~~~
+### Create Object
+~~~dart
+
+~~~
+### Modify Object
+~~~dart
+
+~~~
+### Sync
+~~~dart
+
+~~~
