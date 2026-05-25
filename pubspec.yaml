@@ -30,7 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  objective_db: ^0.3.2+26
+  objective_db: ^0.3.3+27
   file_picker: ^11.0.2
   markdown_editor_plus: ^0.2.15
   cherry_toast: ^1.13.0
