@@ -13,29 +13,66 @@ Requests should always be of type POST and format the body in BSON format.
 ~~~
 http://localhost:port/graphene
 ~~~
-
--------------------Documentation is under development----------------------
+API POST Body
+-----------------------------------------
 ### Get Objects List
 ~~~dart
-
+{
+  "variables": {
+  },
+  "query": "get-object-list"
+}
 ~~~
 ### Login
 ~~~dart
-
+{
+  "variables": {
+    "username": "someUsername",
+    "password": "somePassword"
+  },
+  "query": "login"
+}
 ~~~
 ### Logout
 ~~~dart
-
+{
+  "variables": {
+    "username": "someUsername",
+    "password": "somePassword"
+  },
+  "mutation": "logout"
+}
 ~~~
 ### Create Object
 ~~~dart
-
+{
+  "variables": {
+    "accessToken": "tokenFromLoginCall",
+    "zenodoDOI": "zenodoDOI",
+    "zenodoDownloadLink": "zenodoDownloadLink"
+  },
+  "mutation": "createObject"
+}
 ~~~
 ### Modify Object
 ~~~dart
-
+{
+  "variables": {
+    "accessToken": "tokenFromLoginCall",
+    "zenodoDOI": "zenodoDOI",
+    "zenodoDownloadLink": "zenodoDownloadLink",
+    "uuid": "uuidOfObjectToModify"
+  },
+  "mutation": "modifyObject"
+}
 ~~~
 ### Sync
 ~~~dart
-
+{
+  "variables": {
+    "accessToken": "tokenFromLoginCall",
+    "uuid": "uuidOfObjectToModify"
+  },
+  "mutation": "sync"
+}
 ~~~
