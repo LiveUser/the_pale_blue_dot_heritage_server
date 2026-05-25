@@ -256,7 +256,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.push(context, MaterialPageRoute(
                   builder: (context) => MainMenu(
                     databaseLocation: databaseLocation,
-                    authDatabaseLocation: databaseLocation,
+                    authDatabaseLocation: authDatabaseLocation,
                   ),
                 ));
               }
