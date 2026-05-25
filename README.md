@@ -86,3 +86,12 @@ API POST Body
   "mutation": "sync"
 }
 ~~~
+### Full Sync
+~~~dart
+{
+  "variables": {
+    "accessToken": "tokenFromLoginCall",
+  },
+  "mutation": "fullSync"
+}
+~~~

@@ -262,7 +262,38 @@ class _HomePageState extends State<HomePage> {
                             );
                             return "Object synced succesfully";
                           }else{
-                            throw "Zenodo DOI and Download Link cannot be empty";
+                            throw "uuid cannot be empty";
+                          }
+                        }else{
+                          throw "You do not have access";
+                        }
+                      },
+                      "fullSync": (arguments)async{
+                        Entry authDatabase = Entry(dbPath: arguments["authDatabaseLocation"]);
+                        Entry objectsDatabase = Entry(dbPath: arguments["databaseLocation"]);
+                        bool userHasAccess = tokenIsValid(
+                          authDatabase: authDatabase, 
+                          accessToken: arguments["accessToken"],
+                        );
+                        if(userHasAccess){
+                          for(DbObject dbObject in objectsDatabase.select().selectMultiple(key: "objects")){
+                            String doi = dbObject.view()["zenodoDOI"].substring(dbObject.view()["zenodoDOI"].lastIndexOf(".") + 1);
+                            Uri uri = Uri.parse('https://zenodo.org/api/records/$doi');
+                            //print(uri.toString());
+                            Response response = await get(uri);
+                            Map<String, dynamic> data = json.decode(response.body);
+                            //print(data);
+                            Map<String,dynamic> metadata = data['metadata'];
+                            String title = metadata['title'] ?? 'Untitled';
+                            String description = metadata['description'] ?? 'No description available.';
+                            dbObject.insert(
+                              key: "title",
+                              value: title,
+                            );
+                            dbObject.insert(
+                              key: "description", 
+                              value: description,
+                            );
                           }
                         }else{
                           throw "You do not have access";
