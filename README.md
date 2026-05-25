@@ -66,6 +66,16 @@ API POST Body
   "mutation": "modifyObject"
 }
 ~~~
+### Delete Object
+~~~dart
+{
+  "variables": {
+    "accessToken": "tokenFromLoginCall",
+    "uuid": "uuidOfObjectToModify"
+  },
+  "mutation": "delete"
+}
+~~~
 ### Sync
 ~~~dart
 {

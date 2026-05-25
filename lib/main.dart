@@ -207,6 +207,25 @@ class _HomePageState extends State<HomePage> {
                           throw "You do not have access";
                         }
                       },
+                      //Delete Object
+                      "delete": (arguments)async{
+                        Entry authDatabase = Entry(dbPath: arguments["authDatabaseLocation"]);
+                        Entry objectsDatabase = Entry(dbPath: arguments["databaseLocation"]);
+                        bool userHasAccess = tokenIsValid(
+                          authDatabase: authDatabase, 
+                          accessToken: arguments["accessToken"],
+                        );
+                        if(userHasAccess){
+                          String uuid = arguments["uuid"];
+                          objectsDatabase.select().delete(
+                            key: "objects", 
+                            uuid: uuid,
+                          );
+                          return "Object deleted succesfully";
+                        }else{
+                          throw "You do not have access";
+                        }
+                      },
                       //Sync changes
                       "sync": (arguments)async{
                         Entry authDatabase = Entry(dbPath: arguments["authDatabaseLocation"]);
