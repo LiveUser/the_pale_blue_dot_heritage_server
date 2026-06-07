@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:graphene_server/auth.dart';
+import 'package:lost/lost.dart';
 import 'package:raw_context/raw_context.dart';
+import 'package:sortero/sortero.dart';
 import 'package:the_pale_blue_dot_heritage_server/account_creator.dart';
 import 'package:the_pale_blue_dot_heritage_server/widgets.dart';
 import 'package:objective_db/objective_db.dart';
@@ -19,6 +21,22 @@ class AccessControlPanel extends StatefulWidget {
 
 class _AccessControlPanelState extends State<AccessControlPanel> {
   TextEditingController searchQuery = TextEditingController();
+
+  @override
+  void initState(){
+    super.initState();
+    searchQuery.addListener((){
+      setState(() {
+        
+      });
+    });
+  }
+
+  @override
+  void dispose(){
+    super.dispose();
+    searchQuery.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +65,7 @@ class _AccessControlPanelState extends State<AccessControlPanel> {
           padding: EdgeInsetsGeometry.all(20),
           child: Column(
             children: [
-              //TODO: Make the search functions work
+              //Search functions work
               Row(
                 children: [
                   Expanded(
@@ -80,6 +98,7 @@ class _AccessControlPanelState extends State<AccessControlPanel> {
               //Display Accounts
               AccountsDisplayer(
                 authDatabaseLocation: widget.authDatabaseLocation,
+                searchQuery: searchQuery.text,
                 reload: (){
                   setState(() {
                     
@@ -99,11 +118,13 @@ class StoredAccount extends StatelessWidget {
     required this.authDatabaseLocation,
     required this.username,
     required this.password,
+    required this.instances,
     required this.reload,
   });
   final String authDatabaseLocation;
   final String username;
   final String password;
+  final int instances;
   final Function reload;
 
   @override
@@ -212,9 +233,11 @@ class AccountsDisplayer extends StatelessWidget {
   const AccountsDisplayer({
     super.key,
     required this.authDatabaseLocation,
+    required this.searchQuery,
     required this.reload,
   });
   final String authDatabaseLocation;
+  final String searchQuery;
   final Function reload;
 
   List<Widget> widgetizeAccounts(){
@@ -226,13 +249,25 @@ class AccountsDisplayer extends StatelessWidget {
       authDatabase: entry,
     );
     for(Map<String,dynamic> account in allAccounts){
-      widgets.add(StoredAccount(
-        authDatabaseLocation: authDatabaseLocation,
-        username: account["username"],
-        password: account["password"],
-        reload: reload,
-      ));
+      int instancesOfUsername = (account["username"] as String).instancesOf(searchQuery);
+      int instancesOfPassword = (account["password"] as String).instancesOf(searchQuery);
+      int totalInstances = instancesOfUsername + instancesOfPassword;
+      if(0 < totalInstances || searchQuery.isEmpty){
+        widgets.add(StoredAccount(
+          authDatabaseLocation: authDatabaseLocation,
+          username: account["username"],
+          password: account["password"],
+          instances: totalInstances,
+          reload: reload,
+        ));
+      }  
     }
+    widgets.bubbleSort(
+      reverseOrder: true,
+      compare: (account){
+        return (account as StoredAccount).instances;
+      },
+    );
     return widgets;
   }
 
